@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler
 from datetime import datetime
 from threading import Timer
 import json
+import urllib.parse
 import os
 
 base_url = "https://edu.definesys.cn";
@@ -29,7 +30,6 @@ def login(username, password):
     except requests.exceptions.RequestException as e:
         print(f"登录失败: {e}");
         return None;
-
 def sign(token):
     url = f"{base_url}/edu-api/forumSign/sign";
     headers = {
@@ -65,18 +65,21 @@ def comment(token):
     except requests.exceptions.RequestException as e:
         print(f"评论失败 : {e}");
         return None;
-
 def task():
-    user_info = login("15249152404", "welcome1")
-    if user_info:
-        token = user_info["token"];
-        sign(token);
-        for i in range(10):
-            comment(token);
-            time.sleep(2);
+    userList = os.environ.get("USER_INFO_LIST");
+    userList = userList.split(",");
+    for user in userList:
+        username = user.split("=")[0];
+        password = user.split("=")[1];
+        user_info = login(username, password)
+        if user_info:
+            token = user_info["token"];
+            sign(token);
+            for i in range(10):
+                comment(token);
+                time.sleep(2);
     return;
-
-def task2():
+def time_task():
     # 设置定时任务，每天早上8点执行
     # 计算从现在到明天早上8点的秒数
     seconds = (datetime.now().replace(hour=17, minute=0, second=0, microsecond=0) - datetime.now()).total_seconds();
@@ -88,6 +91,12 @@ def task2():
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        path = self.path
+        query = path.split('?')[-1]
+        params = urllib.parse.parse_qs(query)
+        flag = params.get("flag", [""])[0]
+        if flag:
+            time_task();
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Content-type', 'application/json')
@@ -95,6 +104,12 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps({"code": "ok", "message": "定时任务已启动，每日8点进行执行"}).encode("utf-8"));
         return
 
-if __name__ == '__main__':
-    print('PY-AUTO-SIGN');
-
+# if __name__ == '__main__':
+#     userList = "152491=w222,1=welc"
+#     userList = userList.split(",");
+#     print(userList);
+#     for user in userList:
+#         username = user.split("=")[0];
+#         password = user.split("=")[1];
+#         print(username);
+#         print(password);
