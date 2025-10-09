@@ -1,10 +1,7 @@
 import requests
 import time
 from http.server import BaseHTTPRequestHandler
-from datetime import datetime
-from threading import Timer
 import json
-import urllib.parse
 import os
 
 base_url = "https://edu.definesys.cn";
@@ -80,24 +77,10 @@ def task():
                 comment(token);
                 time.sleep(2);
     return;
-def time_task():
-    # 设置定时任务，每天早上8点执行
-    # 计算从现在到明天早上8点的秒数
-    seconds = (datetime.now().replace(hour=18, minute=0, second=0, microsecond=0) - datetime.now()).total_seconds();
-    # 如果已经过了今天的执行时间，则加上一天的秒数
-    if seconds < 0:
-        seconds += 86400
-    # 创建并启动定时器
-    Timer(seconds, task).start();
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        path = self.path
-        query = path.split('?')[-1]
-        params = urllib.parse.parse_qs(query)
-        flag = params.get("flag", [""])[0]
-        if flag:
-            time_task();
+        task();
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Content-type', 'application/json')
@@ -105,12 +88,15 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps({"code": "ok", "message": "定时任务已启动，每日8点进行执行"}).encode("utf-8"));
         return
 
-# if __name__ == '__main__':
-#     userList = "152491=w222,1=welc"
-#     userList = userList.split(",");
-#     print(userList);
-#     for user in userList:
-#         username = user.split("=")[0];
-#         password = user.split("=")[1];
-#         print(username);
-#         print(password);
+if __name__ == '__main__':
+    userList = "152491=w222,1=welc"
+    userList = userList.split(",");
+    print(userList);
+    for user in userList:
+        username = user.split("=")[0];
+        password = user.split("=")[1];
+        print(username);
+        print(password);
+    flag = "1";
+    if flag:
+        print("<UNK>");
