@@ -67,6 +67,7 @@ def comment(token):
         return None;
 def task():
     userList = os.environ.get("USER_INFO_LIST");
+    print(userList);
     userList = userList.split(",");
     for user in userList:
         username = user.split("=")[0];
@@ -82,7 +83,7 @@ def task():
 def time_task():
     # 设置定时任务，每天早上8点执行
     # 计算从现在到明天早上8点的秒数
-    seconds = (datetime.now().replace(hour=17, minute=0, second=0, microsecond=0) - datetime.now()).total_seconds();
+    seconds = (datetime.now().replace(hour=18, minute=0, second=0, microsecond=0) - datetime.now()).total_seconds();
     # 如果已经过了今天的执行时间，则加上一天的秒数
     if seconds < 0:
         seconds += 86400
