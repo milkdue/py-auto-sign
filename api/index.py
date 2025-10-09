@@ -1,5 +1,4 @@
 import requests
-import time
 from http.server import BaseHTTPRequestHandler
 import json
 import os
@@ -75,7 +74,6 @@ def task():
             sign(token);
             for i in range(10):
                 comment(token);
-                time.sleep(2);
     return;
 
 class handler(BaseHTTPRequestHandler):
