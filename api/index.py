@@ -67,8 +67,8 @@ def get_post_list(token):
         "lable": "",
         "order": "",
         "page": 1,
-        # "pageSize": 12,
-        "pageSize": 4,
+        "pageSize": 12,
+        # "pageSize": 4,
         "type": "全部"
     };
     try:
@@ -139,7 +139,7 @@ def comment(token):
                 if post["postCommentNum"] != 0:
                     comment_list = get_post_detail_comment(token, post["id"], post["postCommentNum"]);
                     if comment_list is not None:
-                        flag = any(c["userId"] == "100393409317300076544" for c in comment_list);
+                        flag = not any(c["userId"] == "100393409317300076544" for c in comment_list);
 
                 if flag:
                     detail = get_post_detail(token, post["id"]);
@@ -187,15 +187,18 @@ class handler(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     userList = "1524=api_key"
-    userList = userList.split(",");
-    print(userList);
-    for user in userList:
-        username = user.split("=")[0];
-        password = user.split("=")[1];
-        print(username);
-        print(password);
-        user_info = login(username, password);
-        token = user_info["token"];
+    a = [{"a": 1}, {"a": 2}];
+    print(any(aa["a"] == 1 for aa in a))
+    # userList = userList.split(",");
+    # print(userList);
+    # for user in userList:
+    #     username = user.split("=")[0];
+    #     password = user.split("=")[1];
+    #     print(username);
+    #     print(password);
+    #     user_info = login(username, password);
+    #     token = user_info["token"];
+
 
 
 
