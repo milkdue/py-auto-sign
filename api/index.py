@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler
 import json
 import os
 from google import genai
+import time
 
 base_url = "https://edu.definesys.cn";
 
@@ -154,6 +155,7 @@ def comment(token):
                         if response.text:
                             ai_count += 1;
                             comment_action(token, { "postId": post["id"], "commentContent": response.text + "\n---本次回答由gemini提供。" });
+                            time.sleep(1);
 
     for i in range(10 - ai_count):
         comment_action(token, { "commentContent": "顶", "commentId": "764534329828179968", "postId": "764534286220001280", "rootId": "764534329828179968"});
