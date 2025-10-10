@@ -66,8 +66,8 @@ def get_post_list(token):
         "lable": "",
         "order": "",
         "page": 1,
-        # "pageSize": 12,
-        "pageSize": 3,
+        "pageSize": 12,
+        # "pageSize": 3,
         "type": "全部"
     };
     try:
@@ -169,7 +169,8 @@ def task():
         if user_info:
             token = user_info["token"];
             sign(token);
-            comment(token);
+            if username == os.environ.get("CAN_COMMENT_USER_NAME"):
+                comment(token);
     return;
 
 class handler(BaseHTTPRequestHandler):
