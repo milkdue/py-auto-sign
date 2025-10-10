@@ -67,8 +67,8 @@ def get_post_list(token):
         "lable": "",
         "order": "",
         "page": 1,
-        "pageSize": 12,
-        # "pageSize": 3,
+        # "pageSize": 12,
+        "pageSize": 4,
         "type": "全部"
     };
     try:
