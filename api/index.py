@@ -156,7 +156,7 @@ def comment(token):
                             comment_action(token, { "postId": post["id"], "commentContent": response.text + "\n---本次回答由gemini提供。" });
 
     for i in range(10 - ai_count):
-        comment_action(token, { "commentContent": "1", "commentId": "718840335383396352", "postId": "718771683434954752", "rootId": "718840335383396352"});
+        comment_action(token, { "commentContent": "顶", "commentId": "764534329828179968", "postId": "764534286220001280", "rootId": "764534329828179968"});
 
 def task():
     userList = os.environ.get("USER_INFO_LIST");
