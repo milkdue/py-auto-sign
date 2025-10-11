@@ -4,6 +4,8 @@ import json
 import os
 from google import genai
 import time
+from google.genai import types
+import httpx
 
 base_url = "https://edu.definesys.cn";
 
@@ -126,7 +128,6 @@ def get_post_detail_comment(token, id, page_size):
     except requests.exceptions.RequestException as e:
         print(f"<UNK> : {e}");
         return None;
-
 def comment(token):
     post_list = get_post_list(token);
     ai_count = 0;
@@ -159,10 +160,76 @@ def comment(token):
 
     for i in range(10 - ai_count):
         comment_action(token, { "commentContent": "顶", "commentId": "764534329828179968", "postId": "764534286220001280", "rootId": "764534329828179968"});
+def post_action(token, data):
+    url = f"{base_url}/edu-api/forum/add/post";
+    headers = {
+        "token": token
+    }
+    try:
+        requests.post(url, json=data, headers=headers);
+    except requests.exceptions.RequestException as e:
+        print(f"<UNK> : {e}");
+    return;
+def generate_post_list():
+    post_list = [];
+    jj_post_list = get_jj_post();
+    if post_list is not None:
+        for post in jj_post_list:
+            p = dict();
+            p["id"] = post["article_id"];
+            p["title"] = post["article_info"]["title"];
+            api_key = os.environ.get("GOOGLE_API_KEY");
+            client = genai.Client(api_key=api_key);
+            html_url = f"https://juejin.cn/post/{p["id"]}";
+            html_content = httpx.get(html_url).content;
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=[
+                    types.Part.from_bytes(
+                        data=html_content,
+                        mime_type="text/html",
+                    ),
+                    "根据网页内容生成一篇学习笔记要求逻辑清晰内容饱满适合分享他人"
+                ]
+            );
+            p["content"] = f"{response.text}\n\n\n-------------------------本篇文章摘自 {html_url} 由gemini生成。";
+            post_list.append(p);
+            time.sleep(1)
 
+    return post_list;
+def get_jj_post():
+    url = "https://api.juejin.cn/recommend_api/v1/article/recommend_cate_tag_feed?aid=2608&uuid=7546447874553759232&spider=0";
+    data = {
+        "id_type": 2,
+        "sort_type": 200,
+        "cate_id": "6809637767543259144",
+        "tag_id": "6809640407484334093",
+        "cursor": "0",
+        "limit": 3
+    }
+    try:
+        response = requests.post(url, json=data);
+        if response.status_code == 200:
+            resp = response.json();
+            return resp["data"];
+        else:
+            print("网络错误");
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"<UNK> : {e}");
+        return None;
+def post(token):
+    post_list = generate_post_list();
+    for post in post_list:
+        post_action(token, {
+            "content": post["content"],
+            "lables": ["knowledge-sharing"],
+            "title": post["title"],
+            "type": "aPaaS"
+        });
+    return;
 def task():
     userList = os.environ.get("USER_INFO_LIST");
-    print(userList);
     userList = userList.split(",");
     for user in userList:
         username = user.split("=")[0];
@@ -173,6 +240,7 @@ def task():
             sign(token);
             if username == os.environ.get("CAN_COMMENT_USER_NAME"):
                 comment(token);
+                post(token);
     return;
 
 class handler(BaseHTTPRequestHandler):
@@ -189,6 +257,9 @@ if __name__ == '__main__':
     userList = "1524=api_key"
     a = [{"a": 1}, {"a": 2}];
     print(any(aa["a"] == 1 for aa in a))
+
+    for p in generate_post_list():
+        print(p)
     # userList = userList.split(",");
     # print(userList);
     # for user in userList:
