@@ -160,6 +160,10 @@ def comment(token):
 
     for i in range(10 - ai_count):
         comment_action(token, { "commentContent": "顶", "commentId": "764534329828179968", "postId": "764534286220001280", "rootId": "764534329828179968"});
+def normal_comment(token):
+    for i in range(10):
+        comment_action(token, { "commentContent": "顶", "commentId": "764534329828179968", "postId": "764534286220001280", "rootId": "764534329828179968"});
+    return;
 def post_action(token, data):
     url = f"{base_url}/edu-api/forum/add/post";
     headers = {
@@ -229,17 +233,26 @@ def post(token):
         });
     return;
 def task():
-    userList = os.environ.get("USER_INFO_LIST");
-    userList = userList.split(",");
-    for user in userList:
+    user_list = os.environ.get("USER_INFO_LIST");
+    user_list = user_list.split(",");
+    can_ai_comment_user_list = os.environ.get("CAN_AI_COMMENT_USER_LIST");
+    can_ai_comment_user_list = can_ai_comment_user_list.split(",");
+    can_ai_post_user_list = os.environ.get("CAN_AI_POST_USER_LIST");
+    can_ai_post_user_list = can_ai_post_user_list.split(",");
+    can_normal_comment_user_list = os.environ.get("CAN_NORMAL_COMMENT_USER_LIST");
+    can_normal_comment_user_list = can_normal_comment_user_list.split(",");
+    for user in user_list:
         username = user.split("=")[0];
         password = user.split("=")[1];
         user_info = login(username, password)
         if user_info:
             token = user_info["token"];
             sign(token);
-            if username == os.environ.get("CAN_COMMENT_USER_NAME"):
+            if username in can_ai_comment_user_list:
                 comment(token);
+            if username in can_normal_comment_user_list:
+                normal_comment(token);
+            if username in can_ai_post_user_list:
                 post(token);
     return;
 
@@ -256,10 +269,12 @@ class handler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     userList = "1524=api_key"
     a = [{"a": 1}, {"a": 2}];
-    print(any(aa["a"] == 1 for aa in a))
+    b = [1, 2, 3];
+    print(3 in b);
+    # print(any(aa["a"] == 1 for aa in a))
 
-    for p in generate_post_list():
-        print(p)
+    # for p in generate_post_list():
+    #     print(p)
     # userList = userList.split(",");
     # print(userList);
     # for user in userList:
