@@ -205,7 +205,7 @@ def get_jj_post():
     url = "https://api.juejin.cn/recommend_api/v1/article/recommend_cate_tag_feed?aid=2608&uuid=7546447874553759232&spider=0";
     data = {
         "id_type": 2,
-        "sort_type": 200,
+        "sort_type": 300,
         "cate_id": "6809637767543259144",
         "tag_id": "6809640407484334093",
         "cursor": "0",
@@ -273,6 +273,8 @@ if __name__ == '__main__':
     print(3 in b);
     # print(any(aa["a"] == 1 for aa in a))
 
+    for p in get_jj_post():
+        print(p);
     # for p in generate_post_list():
     #     print(p)
     # userList = userList.split(",");
